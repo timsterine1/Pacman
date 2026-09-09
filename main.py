@@ -24,8 +24,20 @@ class Player:
                 self.xpos -= 1
             elif direction == "East" and grid[self.ypos][self.xpos + 1].is_wall == False:
                 self.xpos += 1
+
+        ## use the portal 
+            if self.xpos == 27 and self.ypos == 14 and direction == "East":
+                self.xpos = 1
+                self.ypos = 14
+
+            if self.xpos == 0 and self.ypos == 14 and direction == "West":
+                self.xpos = 26
+                self.ypos = 14
+                
     def score_up(self):
-        self.score += 1
+        if grid[self.ypos][self.xpos].is_coin:
+            grid[self.ypos][self.xpos].is_coin = False
+            self.score += 1
 
 class Ghost:
     def __init__(self):
@@ -90,7 +102,6 @@ for ypos in range(len(grid)):
             block = Block()
             grid[ypos][xpos] = block
 
-MAIN_FONT = "Arial"
 MAIN_FONT_SIZE = 20
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -99,6 +110,7 @@ FPS = 60
 
 pygame.init()
 pygame.font.init()
+MAIN_FONT = pygame.font.SysFont("Arial", MAIN_FONT_SIZE)
 pygame.display.set_caption("Pacman")
 
 screen = pygame.display.set_mode((1920, 1080))
@@ -120,15 +132,19 @@ while running:
             if event.key == pygame.K_w:
                 player.face = "North"
                 player.move(player.face, grid)
+                player.score_up()
             elif event.key == pygame.K_s:
                 player.face = "South"
                 player.move(player.face, grid)
+                player.score_up()
             elif event.key == pygame.K_a:
                 player.face = "West"
                 player.move(player.face, grid)
+                player.score_up()
             elif event.key == pygame.K_d:
                 player.face = "East"
                 player.move(player.face, grid)
+                player.score_up()
     screen.fill(WHITE)
     clock.tick(FPS)
 
@@ -140,7 +156,11 @@ while running:
             elif block.is_coin:
                 pygame.draw.circle(screen, BLUE, (xpos * SCALE + SREEN_MID_X + SCALE // 2, ypos * SCALE + SREEN_MID_Y + SCALE // 2), 5)
         pygame.draw.rect(screen, (255, 255, 0), (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-    print(f"Player Position: ({player.xpos}, {player.ypos})")
+
+
+
+    draw_player_count = MAIN_FONT.render(f"Score: {player.score}", True, BLACK)
+    screen.blit(draw_player_count, (10, 10))
     pygame.display.flip()
 
 pygame.quit()
