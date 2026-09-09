@@ -9,14 +9,21 @@ class Block:
 
 class Player:
     def __init__(self):
-        self.xpos = 0
-        self.ypos = 0
+        self.xpos = 1
+        self.ypos = 1
         self.is_alive = True
         self.score = 0
         self.face = "North"
 
     def move(self, direction, grid):
-        pass
+            if direction == "North" and grid[self.ypos - 1][self.xpos].is_wall == False:
+                self.ypos -= 1
+            elif direction == "South" and grid[self.ypos + 1][self.xpos].is_wall == False:
+                self.ypos += 1
+            elif direction == "West" and grid[self.ypos][self.xpos - 1].is_wall == False:
+                self.xpos -= 1
+            elif direction == "East" and grid[self.ypos][self.xpos + 1].is_wall == False:
+                self.xpos += 1
     def score_up(self):
         self.score += 1
 
@@ -30,7 +37,7 @@ class Ghost:
         self.face = "North"
         self.color = "Red"
 
-    def move(self, direction, grid):
+    def move(self, direction):
         pass
     def find_player(self, player):
         pass
@@ -97,6 +104,7 @@ pygame.display.set_caption("Pacman")
 screen = pygame.display.set_mode((1920, 1080))
 clock = pygame.time.Clock()
 running = True
+player = Player()
 
 SREEN_MID_X = screen.get_width() //4
 SREEN_MID_Y = screen.get_height() //12
@@ -108,6 +116,19 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                player.face = "North"
+                player.move(player.face, grid)
+            elif event.key == pygame.K_s:
+                player.face = "South"
+                player.move(player.face, grid)
+            elif event.key == pygame.K_a:
+                player.face = "West"
+                player.move(player.face, grid)
+            elif event.key == pygame.K_d:
+                player.face = "East"
+                player.move(player.face, grid)
     screen.fill(WHITE)
     clock.tick(FPS)
 
@@ -118,6 +139,8 @@ while running:
                 pygame.draw.rect(screen, BLACK, (xpos * SCALE + SREEN_MID_X , ypos * SCALE + SREEN_MID_Y , SCALE, SCALE))
             elif block.is_coin:
                 pygame.draw.circle(screen, BLUE, (xpos * SCALE + SREEN_MID_X + SCALE // 2, ypos * SCALE + SREEN_MID_Y + SCALE // 2), 5)
+        pygame.draw.rect(screen, (255, 255, 0), (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+    print(f"Player Position: ({player.xpos}, {player.ypos})")
     pygame.display.flip()
 
 pygame.quit()
