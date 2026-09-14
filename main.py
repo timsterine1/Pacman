@@ -173,10 +173,13 @@ while running:
         pygame.draw.rect(screen, YELLOW , (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
         pygame.draw.rect(screen, PINK, (GHOSTS_PINK.xpos * SCALE + SREEN_MID_X, GHOSTS_PINK.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
 
+    killed = False
     if player.xpos == GHOSTS_PINK.xpos and player.ypos == GHOSTS_PINK.ypos:
         player.is_alive = False
         print("Der Spieler ist gestorben!")
+        killed = True
         running = False
+
 
     won = False
     if player.score == 240:
@@ -199,6 +202,17 @@ if won:
     screen.blit(gewonnen_text, (screen.get_width() // 2 - gewonnen_text.get_width() // 2, screen.get_height() // 2 - gewonnen_text.get_height() // 2))
     pygame.display.flip()
     pygame.time.delay(3000)
+if killed:
+    print("Der Spieler ist gestorben!")
+    screen.fill(WHITE) # spielfeld leeren
+
+    verloren = pygame.font.SysFont("Arial", 50)
+    verloren_text = verloren.render("Du hast verloren!", True, BLACK)
+
+    screen.blit(verloren_text, (screen.get_width() // 2 - verloren_text.get_width() // 2, screen.get_height() // 2 - verloren_text.get_height() // 2))
+    pygame.display.flip()
+    pygame.time.delay(3000)
+    
 pygame.quit()
 sys.exit()
 
