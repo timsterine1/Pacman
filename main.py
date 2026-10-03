@@ -1,3 +1,4 @@
+import queue
 import random
 import pygame
 import sys
@@ -52,9 +53,29 @@ class Ghost:
 
     def move(self, direction):
         pass
-    def find_player(self, player):
-        pass
-
+    def find_player(self, player, grid):
+         # 1. Wo wir schon waren (unsere Kreide-Markierungen)
+        visited = []
+        
+        # 2. Unsere To-Do-Liste (Queue)
+        # Ein Weg ist eine Liste von Punkten. 
+        # Zu Beginn gibt es nur EINEN Weg mit nur EINEM einzigen Punkt: Wo der Geist gerade steht!
+        queue = [ [(self.xpos, self.ypos)] ]
+        while len(queue) > 0:
+            current_path = queue.pop(0)
+            current_x, current_y = current_path[-1]
+            if current_x == player.xpos and current_y == player.ypos:
+                print(current_path)
+                return current_path
+            else:
+                visited.append((current_x, current_y))
+                for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                    next_x = current_x + dx
+                    next_y = current_y + dy
+                    if 0 <= next_x < len(grid[0]) and 0 <= next_y < len(grid):
+                        if not grid[next_y][next_x].is_wall and (next_x, next_y) not in visited:
+                            new_path = current_path + [(next_x, next_y)]
+                            queue.append(new_path)
 
 grid = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -133,7 +154,7 @@ SREEN_MID_X = screen.get_width() //4
 SREEN_MID_Y = screen.get_height() //12
 
 SCALE = 30
-
+GHOSTS_PINK.find_player(player, grid)
 while running:
     for event in pygame.event.get():
         # general keyboard input
