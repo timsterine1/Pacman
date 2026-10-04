@@ -52,19 +52,23 @@ class Ghost:
         self.face = "North"
 
     def move(self, direction):
-        pass
+        queue = Ghost.find_player(self, player, grid)
+        if queue:
+            next_move = queue[0]
+            self.xpos, self.ypos = next_move
+            self.xpos, self.ypos = next_move
+            queue.pop(0)
+
+
+
     def find_player(self, player, grid):
-         # 1. Wo wir schon waren (unsere Kreide-Markierungen)
         visited = []
-        
-        # 2. Unsere To-Do-Liste (Queue)
-        # Ein Weg ist eine Liste von Punkten. 
-        # Zu Beginn gibt es nur EINEN Weg mit nur EINEM einzigen Punkt: Wo der Geist gerade steht!
-        queue = [ [(self.xpos, self.ypos)] ]
+        queue = [[(self.xpos, self.ypos)]]
         while len(queue) > 0:
             current_path = queue.pop(0)
             current_x, current_y = current_path[-1]
             if current_x == player.xpos and current_y == player.ypos:
+                current_path.pop(0) 
                 print(current_path)
                 return current_path
             else:
@@ -155,6 +159,8 @@ SREEN_MID_Y = screen.get_height() //12
 
 SCALE = 30
 GHOSTS_PINK.find_player(player, grid)
+
+wait_to_move = 0
 while running:
     for event in pygame.event.get():
         # general keyboard input
@@ -166,18 +172,22 @@ while running:
                 player.face = "North"
                 player.move(player.face, grid)
                 player.score_up()
+                GHOSTS_PINK.find_player(player, grid)
             elif event.key == pygame.K_s:
                 player.face = "South"
                 player.move(player.face, grid)
                 player.score_up()
+                GHOSTS_PINK.find_player(player, grid)
             elif event.key == pygame.K_a:
                 player.face = "West"
                 player.move(player.face, grid)
                 player.score_up()
+                GHOSTS_PINK.find_player(player, grid)
             elif event.key == pygame.K_d:
                 player.face = "East"
                 player.move(player.face, grid)
                 player.score_up()
+                GHOSTS_PINK.find_player(player, grid)
 
     screen.fill(WHITE)
     clock.tick(FPS)
@@ -193,6 +203,12 @@ while running:
 
         pygame.draw.rect(screen, YELLOW , (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
         pygame.draw.rect(screen, PINK, (GHOSTS_PINK.xpos * SCALE + SREEN_MID_X, GHOSTS_PINK.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+
+    if wait_to_move <= 0:
+        GHOSTS_PINK.move(GHOSTS_PINK.face)
+        wait_to_move = 30
+    else:
+        wait_to_move -= 1
 
     killed = False
     if player.xpos == GHOSTS_PINK.xpos and player.ypos == GHOSTS_PINK.ypos:
