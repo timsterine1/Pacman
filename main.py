@@ -7,6 +7,7 @@ class Block:
     def __init__(self):
         self.is_wall = False
         self.is_coin = False
+        self.is_alive = False
 
 class Player:
     def __init__(self):
@@ -51,13 +52,19 @@ class Ghost:
         self.is_alive = True
         self.face = "North"
 
-    def move(self, direction):
+    def move(self, direction,grid):
         queue = Ghost.find_player(self, player, grid)
         if queue:
             next_move = queue[0]
-            self.xpos, self.ypos = next_move
-            self.xpos, self.ypos = next_move
-            queue.pop(0)
+
+            feld_besetzt = False
+            for ghost in Ghosts:
+                if ghost != self and ghost.xpos == next_move[0] and ghost.ypos == next_move[1]:
+                    feld_besetzt = True
+                    break
+            if not feld_besetzt:
+                self.xpos, self.ypos = next_move
+                queue.pop(0)
 
 
 
@@ -153,10 +160,10 @@ GHOSTS_PINK.color = "Pink"
 GHOSTS_PINK.xpos = 13
 GHOSTS_PINK.ypos = 14
 
-GHOSTS_BLACK = Ghost("Black", "Black", 13, 14)
-GHOSTS_BLACK.color = "Black"
-GHOSTS_BLACK.xpos = 15
-GHOSTS_BLACK.ypos = 14
+GHOSTS_BLUE = Ghost("Blue", "Blue", 13, 14)
+GHOSTS_BLUE.color = "Blue"
+GHOSTS_BLUE.xpos = 15
+GHOSTS_BLUE.ypos = 14
 
 GHOSTS_GREEN = Ghost("Green", "Green", 13, 14)
 GHOSTS_GREEN.color = "Green"
@@ -168,7 +175,7 @@ GHOSTS_RED.color = "Red"
 GHOSTS_RED.xpos = 17
 GHOSTS_RED.ypos = 14
 
-Ghosts = [GHOSTS_PINK, GHOSTS_BLACK, GHOSTS_GREEN, GHOSTS_RED]
+Ghosts = [GHOSTS_PINK, GHOSTS_BLUE, GHOSTS_GREEN, GHOSTS_RED]
 
 # Position the grid in the center of the screen
 SREEN_MID_X = screen.get_width() //4
@@ -228,8 +235,8 @@ while running:
         for ghost in Ghosts:
             if ghost.color == "Pink":
                 pygame.draw.rect(screen, PINK, (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-            elif ghost.color == "Black":
-                pygame.draw.rect(screen, BLACK, (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+            elif ghost.color == "Blue":
+                pygame.draw.rect(screen, (0, 0, 255), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
             elif ghost.color == "Green":
                 pygame.draw.rect(screen, (0, 255, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
             elif ghost.color == "Red":
@@ -238,7 +245,7 @@ while running:
 
     if wait_to_move <= 0:
         for ghost in Ghosts:
-            ghost.move(ghost.face)
+            ghost.move(ghost,grid)
         wait_to_move = 30
     else:
         wait_to_move -= 1
