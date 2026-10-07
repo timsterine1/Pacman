@@ -153,12 +153,33 @@ GHOSTS_PINK.color = "Pink"
 GHOSTS_PINK.xpos = 13
 GHOSTS_PINK.ypos = 14
 
+GHOSTS_BLACK = Ghost("Black", "Black", 13, 14)
+GHOSTS_BLACK.color = "Black"
+GHOSTS_BLACK.xpos = 15
+GHOSTS_BLACK.ypos = 14
+
+GHOSTS_GREEN = Ghost("Green", "Green", 13, 14)
+GHOSTS_GREEN.color = "Green"
+GHOSTS_GREEN.xpos = 11
+GHOSTS_GREEN.ypos = 14
+
+GHOSTS_RED = Ghost("Red", "Red", 13, 14)
+GHOSTS_RED.color = "Red"
+GHOSTS_RED.xpos = 17
+GHOSTS_RED.ypos = 14
+
+Ghosts = [GHOSTS_PINK, GHOSTS_BLACK, GHOSTS_GREEN, GHOSTS_RED]
+
 # Position the grid in the center of the screen
 SREEN_MID_X = screen.get_width() //4
 SREEN_MID_Y = screen.get_height() //12
 
 SCALE = 30
 GHOSTS_PINK.find_player(player, grid)
+
+def find_ghost_event():
+    for ghost in Ghosts:
+        ghost.find_player(player, grid)
 
 wait_to_move = 0
 while running:
@@ -171,23 +192,24 @@ while running:
             if event.key == pygame.K_w:
                 player.face = "North"
                 player.move(player.face, grid)
-                player.score_up()
-                GHOSTS_PINK.find_player(player, grid)
+                find_ghost_event()
+
             elif event.key == pygame.K_s:
                 player.face = "South"
                 player.move(player.face, grid)
-                player.score_up()
-                GHOSTS_PINK.find_player(player, grid)
+                find_ghost_event()
+
             elif event.key == pygame.K_a:
                 player.face = "West"
                 player.move(player.face, grid)
-                player.score_up()
-                GHOSTS_PINK.find_player(player, grid)
+                find_ghost_event()
+
             elif event.key == pygame.K_d:
                 player.face = "East"
                 player.move(player.face, grid)
+                find_ghost_event()
                 player.score_up()
-                GHOSTS_PINK.find_player(player, grid)
+
 
     screen.fill(WHITE)
     clock.tick(FPS)
@@ -202,20 +224,32 @@ while running:
                 pygame.draw.circle(screen, BLUE, (xpos * SCALE + SREEN_MID_X + SCALE // 2, ypos * SCALE + SREEN_MID_Y + SCALE // 2), 5)
 
         pygame.draw.rect(screen, YELLOW , (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-        pygame.draw.rect(screen, PINK, (GHOSTS_PINK.xpos * SCALE + SREEN_MID_X, GHOSTS_PINK.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+
+        for ghost in Ghosts:
+            if ghost.color == "Pink":
+                pygame.draw.rect(screen, PINK, (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+            elif ghost.color == "Black":
+                pygame.draw.rect(screen, BLACK, (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+            elif ghost.color == "Green":
+                pygame.draw.rect(screen, (0, 255, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+            elif ghost.color == "Red":
+                pygame.draw.rect(screen, (255, 0, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+
 
     if wait_to_move <= 0:
-        GHOSTS_PINK.move(GHOSTS_PINK.face)
+        for ghost in Ghosts:
+            ghost.move(ghost.face)
         wait_to_move = 30
     else:
         wait_to_move -= 1
 
     killed = False
-    if player.xpos == GHOSTS_PINK.xpos and player.ypos == GHOSTS_PINK.ypos:
-        player.is_alive = False
-        print("Der Spieler ist gestorben!")
-        killed = True
-        running = False
+    for ghost in Ghosts:
+        if player.xpos == ghost.xpos and player.ypos == ghost.ypos:
+            player.is_alive = False
+            print("Der Spieler ist gestorben!")
+            killed = True
+            running = False
 
 
     won = False
