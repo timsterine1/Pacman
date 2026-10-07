@@ -27,7 +27,7 @@ class Player:
             elif direction == "East" and grid[self.ypos][self.xpos + 1].is_wall == False:
                 self.xpos += 1
 
-        ## use the portal 
+        ## use the portal
             if self.xpos == 27 and self.ypos == 14 and direction == "East":
                 self.xpos = 1
                 self.ypos = 14
@@ -75,7 +75,7 @@ class Ghost:
             current_path = queue.pop(0)
             current_x, current_y = current_path[-1]
             if current_x == player.xpos and current_y == player.ypos:
-                current_path.pop(0) 
+                current_path.pop(0)
                 print(current_path)
                 return current_path
             else:
@@ -200,16 +200,19 @@ while running:
                 player.face = "North"
                 player.move(player.face, grid)
                 find_ghost_event()
+                player.score_up()
 
             elif event.key == pygame.K_s:
                 player.face = "South"
                 player.move(player.face, grid)
                 find_ghost_event()
+                player.score_up()
 
             elif event.key == pygame.K_a:
                 player.face = "West"
                 player.move(player.face, grid)
                 find_ghost_event()
+                player.score_up()
 
             elif event.key == pygame.K_d:
                 player.face = "East"
@@ -290,8 +293,7 @@ if killed:
     screen.blit(verloren_text, (screen.get_width() // 2 - verloren_text.get_width() // 2, screen.get_height() // 2 - verloren_text.get_height() // 2))
     pygame.display.flip()
     pygame.time.delay(3000)
-    
+
 pygame.quit()
 sys.exit()
 
-    
