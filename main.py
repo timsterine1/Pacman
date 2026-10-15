@@ -2,6 +2,7 @@ import queue
 import random
 import pygame
 import sys
+import copy
 
 class Block:
     def __init__(self):
@@ -120,21 +121,24 @@ grid = [
     [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
+fresh_grid = copy.deepcopy(grid)
 
 # den objecten in der liste zuweisen
-for ypos in range(len(grid)):
-    for xpos in range(len(grid[ypos])):
-        if grid[ypos][xpos] == 1:
-            block = Block()
-            block.is_wall = True
-            grid[ypos][xpos] = block
-        elif grid[ypos][xpos] == 2:
-            block = Block()
-            block.is_coin = True
-            grid[ypos][xpos] = block
-        else:
-            block = Block()
-            grid[ypos][xpos] = block
+def assign_objects_to_grid(grid):
+    for ypos in range(len(grid)):
+        for xpos in range(len(grid[ypos])):
+            if grid[ypos][xpos] == 1:
+                block = Block()
+                block.is_wall = True
+                grid[ypos][xpos] = block
+            elif grid[ypos][xpos] == 2:
+                block = Block()
+                block.is_coin = True
+                grid[ypos][xpos] = block
+            else:
+                block = Block()
+                grid[ypos][xpos] = block
+assign_objects_to_grid(grid)
 
 MAIN_FONT_SIZE = 20
 WHITE = (255, 255, 255)
@@ -296,6 +300,8 @@ while game_running:
                     if event.key == pygame.K_ESCAPE:
                         game_running = False
                     waiting = False
+                    grid = copy.deepcopy(fresh_grid)
+                    assign_objects_to_grid(grid)
             clock.tick(FPS)
 
 pygame.quit()
