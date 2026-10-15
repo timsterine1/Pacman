@@ -76,7 +76,6 @@ class Ghost:
             current_x, current_y = current_path[-1]
             if current_x == player.xpos and current_y == player.ypos:
                 current_path.pop(0)
-                print(current_path)
                 return current_path
             else:
                 visited.append((current_x, current_y))
@@ -152,148 +151,152 @@ pygame.display.set_caption("Pacman")
 
 screen = pygame.display.set_mode((1920, 1080))
 clock = pygame.time.Clock()
-running = True
-player = Player()
 
-GHOSTS_PINK = Ghost("Pink", "Pink", 13, 14)
-GHOSTS_PINK.color = "Pink"
-GHOSTS_PINK.xpos = 13
-GHOSTS_PINK.ypos = 14
+def place():
+    ghosts = [
+        Ghost("Pink", "Pink", 13, 14),
+        Ghost("Blue", "Blue", 15, 14),
+        Ghost("Green", "Green", 11, 14),
+        Ghost("Red", "Red", 17, 14),
+    ]
+    return ghosts
 
-GHOSTS_BLUE = Ghost("Blue", "Blue", 13, 14)
-GHOSTS_BLUE.color = "Blue"
-GHOSTS_BLUE.xpos = 15
-GHOSTS_BLUE.ypos = 14
+game_running = True
+while game_running:
+    running = True
+    player = Player()
+    Ghosts = place()
 
-GHOSTS_GREEN = Ghost("Green", "Green", 13, 14)
-GHOSTS_GREEN.color = "Green"
-GHOSTS_GREEN.xpos = 11
-GHOSTS_GREEN.ypos = 14
+    # Position the grid in the center of the screen
+    SREEN_MID_X = screen.get_width() //4
+    SREEN_MID_Y = screen.get_height() //12
 
-GHOSTS_RED = Ghost("Red", "Red", 13, 14)
-GHOSTS_RED.color = "Red"
-GHOSTS_RED.xpos = 17
-GHOSTS_RED.ypos = 14
-
-Ghosts = [GHOSTS_PINK, GHOSTS_BLUE, GHOSTS_GREEN, GHOSTS_RED]
-
-# Position the grid in the center of the screen
-SREEN_MID_X = screen.get_width() //4
-SREEN_MID_Y = screen.get_height() //12
-
-SCALE = 30
-GHOSTS_PINK.find_player(player, grid)
-
-def find_ghost_event():
-    for ghost in Ghosts:
-        ghost.find_player(player, grid)
-
-wait_to_move = 0
-while running:
-    for event in pygame.event.get():
-        # general keyboard input
-        if event.type == pygame.QUIT:
-            running = False
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
-                player.face = "North"
-                player.move(player.face, grid)
-                find_ghost_event()
-                player.score_up()
-
-            elif event.key == pygame.K_s:
-                player.face = "South"
-                player.move(player.face, grid)
-                find_ghost_event()
-                player.score_up()
-
-            elif event.key == pygame.K_a:
-                player.face = "West"
-                player.move(player.face, grid)
-                find_ghost_event()
-                player.score_up()
-
-            elif event.key == pygame.K_d:
-                player.face = "East"
-                player.move(player.face, grid)
-                find_ghost_event()
-                player.score_up()
+    SCALE = 30
 
 
-    screen.fill(WHITE)
-    clock.tick(FPS)
-
-    #draw the grid
-    for ypos in range(len(grid)):
-        for xpos in range(len(grid[ypos])):
-            block = grid[ypos][xpos]
-            if block.is_wall:
-                pygame.draw.rect(screen, BLACK, (xpos * SCALE + SREEN_MID_X , ypos * SCALE + SREEN_MID_Y , SCALE, SCALE))
-            elif block.is_coin:
-                pygame.draw.circle(screen, BLUE, (xpos * SCALE + SREEN_MID_X + SCALE // 2, ypos * SCALE + SREEN_MID_Y + SCALE // 2), 5)
-
-        pygame.draw.rect(screen, YELLOW , (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-
+    def find_ghost_event():
         for ghost in Ghosts:
-            if ghost.color == "Pink":
-                pygame.draw.rect(screen, PINK, (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-            elif ghost.color == "Blue":
-                pygame.draw.rect(screen, (0, 0, 255), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-            elif ghost.color == "Green":
-                pygame.draw.rect(screen, (0, 255, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
-            elif ghost.color == "Red":
-                pygame.draw.rect(screen, (255, 0, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+            ghost.find_player(player, grid)
+
+    wait_to_move = 0
+    while running:
+        for event in pygame.event.get():
+            # general keyboard input
+            if event.type == pygame.QUIT:
+                running = False
+                game_running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w:
+                    player.face = "North"
+                    player.move(player.face, grid)
+                    find_ghost_event()
+                    player.score_up()
+
+                elif event.key == pygame.K_s:
+                    player.face = "South"
+                    player.move(player.face, grid)
+                    find_ghost_event()
+                    player.score_up()
+
+                elif event.key == pygame.K_a:
+                    player.face = "West"
+                    player.move(player.face, grid)
+                    find_ghost_event()
+                    player.score_up()
+
+                elif event.key == pygame.K_d:
+                    player.face = "East"
+                    player.move(player.face, grid)
+                    find_ghost_event()
+                    player.score_up()
 
 
-    if wait_to_move <= 0:
+        screen.fill(WHITE)
+        clock.tick(FPS)
+
+        #draw the grid
+        for ypos in range(len(grid)):
+            for xpos in range(len(grid[ypos])):
+                block = grid[ypos][xpos]
+                if block.is_wall:
+                    pygame.draw.rect(screen, BLACK, (xpos * SCALE + SREEN_MID_X , ypos * SCALE + SREEN_MID_Y , SCALE, SCALE))
+                elif block.is_coin:
+                    pygame.draw.circle(screen, BLUE, (xpos * SCALE + SREEN_MID_X + SCALE // 2, ypos * SCALE + SREEN_MID_Y + SCALE // 2), 5)
+
+            pygame.draw.rect(screen, YELLOW , (player.xpos * SCALE + SREEN_MID_X, player.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+
+            for ghost in Ghosts:
+                if ghost.color == "Pink":
+                    pygame.draw.rect(screen, PINK, (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+                elif ghost.color == "Blue":
+                    pygame.draw.rect(screen, (0, 0, 255), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+                elif ghost.color == "Green":
+                    pygame.draw.rect(screen, (0, 255, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+                elif ghost.color == "Red":
+                    pygame.draw.rect(screen, (255, 0, 0), (ghost.xpos * SCALE + SREEN_MID_X, ghost.ypos * SCALE + SREEN_MID_Y, SCALE, SCALE))
+
+
+        if wait_to_move <= 0:
+            for ghost in Ghosts:
+                ghost.move(ghost,grid)
+            wait_to_move = 30
+        else:
+            wait_to_move -= 1
+
+        killed = False
         for ghost in Ghosts:
-            ghost.move(ghost,grid)
-        wait_to_move = 30
-    else:
-        wait_to_move -= 1
+            if player.xpos == ghost.xpos and player.ypos == ghost.ypos:
+                player.is_alive = False
+                print("Der Spieler ist gestorben!")
+                killed = True
+                running = False
 
-    killed = False
-    for ghost in Ghosts:
-        if player.xpos == ghost.xpos and player.ypos == ghost.ypos:
-            player.is_alive = False
-            print("Der Spieler ist gestorben!")
-            killed = True
+
+        won = False
+        if player.score == 240:
+            print("Der Spieler hat gewonnen!")
             running = False
+            won = True
 
-
-    won = False
-    if player.score == 240:
+        #draw the player score
+        draw_player_count = MAIN_FONT.render(f"Score: {player.score}", True, BLACK)
+        screen.blit(draw_player_count, (10, 10))
+        pygame.display.flip()
+    if won:
         print("Der Spieler hat gewonnen!")
-        running = False
-        won = True
+        screen.fill(WHITE)
+        gewonnen = pygame.font.SysFont("Arial", 50)
+        gewonnen_text = gewonnen.render("Du hast gewonnen!", True, BLACK)
+        screen.blit(gewonnen_text, (screen.get_width() // 2 - gewonnen_text.get_width() // 2, screen.get_height() // 2 - gewonnen_text.get_height() // 2))
+        pygame.display.flip()
+        pygame.time.delay(3000)
 
-    #draw the player score
-    draw_player_count = MAIN_FONT.render(f"Score: {player.score}", True, BLACK)
-    screen.blit(draw_player_count, (10, 10))
-    pygame.display.flip()
+    if killed:
+        print("Der Spieler ist gestorben!")
+        screen.fill(WHITE)
+        verloren = pygame.font.SysFont("Arial", 50)
+        verloren_text = verloren.render("Du hast verloren!", True, BLACK)
+        screen.blit(verloren_text, (screen.get_width() // 2 - verloren_text.get_width() // 2, screen.get_height() // 2 - verloren_text.get_height() // 2))
+        try_again = pygame.font.SysFont("Arial", 30)
+        try_again_text = try_again.render("Druecke eine beliebige Taste, um es erneut zu versuchen.", True, BLACK)
+        screen.blit(try_again_text, (screen.get_width() // 2 - try_again_text.get_width() // 2, screen.get_height() // 2 - try_again_text.get_height() // 2 + 50))
+        escape = pygame.font.SysFont("Arial", 30)
+        escape_text = escape.render("Druecke ESC, um das Spiel zu beenden.", True, BLACK)
+        screen.blit(escape_text, (screen.get_width() // 2 - escape_text.get_width() // 2, screen.get_height() // 2 - escape_text.get_height() // 2 + 100))
+        pygame.display.flip()
 
-if won:
-    print("Der Spieler hat gewonnen!")
-    screen.fill(WHITE) # spielfeld leeren
-
-    gewonnen = pygame.font.SysFont("Arial", 50)
-    gewonnen_text = gewonnen.render("Du hast gewonnen!", True, BLACK)
-
-    screen.blit(gewonnen_text, (screen.get_width() // 2 - gewonnen_text.get_width() // 2, screen.get_height() // 2 - gewonnen_text.get_height() // 2))
-    pygame.display.flip()
-    pygame.time.delay(3000)
-if killed:
-    print("Der Spieler ist gestorben!")
-    screen.fill(WHITE) # spielfeld leeren
-
-    verloren = pygame.font.SysFont("Arial", 50)
-    verloren_text = verloren.render("Du hast verloren!", True, BLACK)
-
-    screen.blit(verloren_text, (screen.get_width() // 2 - verloren_text.get_width() // 2, screen.get_height() // 2 - verloren_text.get_height() // 2))
-    pygame.display.flip()
-    pygame.time.delay(3000)
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_running = False
+                    waiting = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        game_running = False
+                    waiting = False
+            clock.tick(FPS)
 
 pygame.quit()
 sys.exit()
-
